@@ -1,3 +1,5 @@
+import java.util.Random;
+
 class SoundGenerator implements Runnable {
     private int samplingRate = 44100; // Number of samples used for 1 second of sound
     private int nyquistFrequency = samplingRate / 2; // Nyquist frequency
@@ -209,10 +211,17 @@ class SoundGenerator implements Runnable {
 
     // This function generates a 'bell' sound using FM synthesis
     private void generateBellFMSynthesis(float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        int samplesToGenerate = int(duration * samplingRate);
+
+        for (int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; i++) {
+            float currentTime = float(i) / samplingRate;
+            soundSamples.leftChannelSamples[i] = amplitude * sin(
+                TWO_PI * frequency * currentTime + amplitude * sin(TWO_PI * frequency * currentTime));
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
+        }
     }
 
-    // This function generate a sound using Karplus-Strong algorithm
+    // This function generates a sound using Karplus-Strong algorithm
     private void generateKarplusStrongSound(float amplitude, float frequency, float duration) {
         // Fill the first 5 seoncds with a sine wave signal
         generateSineInTimeDomain(amplitude, frequency, duration);
@@ -231,7 +240,14 @@ class SoundGenerator implements Runnable {
 
     // This function generats a white noise
     private void generateWhiteNoise(float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        int samplesToGenerate = int(duration * samplingRate);
+        Random random = new Random(-1);
+
+        for (int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; i++) {
+            // The random number is between -1 and 1
+            soundSamples.leftChannelSamples[i] = amplitude * random.nextFloat() * 2;
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
+        }
     }
 
     // This function generates '3 sine wave' sound
