@@ -119,17 +119,17 @@ class AudioSamples {
         }
 
         float timeConstant = 0.2;  // decay constant, see PDF notes for explanation
-        if(!Float.isNaN(param1)) {
+        if (!Float.isNaN(param1)) {
             timeConstant = param1;
         }
 
-        for(int i = 0; i < input.length; ++i) {
+        for (int i = 0; i < input.length; ++i) {
             float currentTime = float(i) / samplingRate;
             float decayMultiplier = (float) Math.exp(-1 * currentTime / timeConstant);
             input[i] = input[i] * decayMultiplier;
 
             // Handle the second channel if needed
-            if(input2.length > 0) {
+            if (input2.length > 0) {
                 input2[i] = input2[i] * decayMultiplier;
             }
         }
@@ -171,18 +171,34 @@ class AudioSamples {
         // Set up the target(s)
         float[] input = new float[0];
         float[] input2 = new float[0];
+        
         switch(target) {
             case(0): input = leftChannelSamples; break;
             case(1): input = rightChannelSamples; break;
             case(2): input = leftChannelSamples; input2 = rightChannelSamples; break;
         }
 
-        float fadeValue = 2.0;  // fade in duration, in seconds
+        float fadeValue = 2.0;  // fade in duration in seconds
         if(!Float.isNaN(param1)) {
             fadeValue = param1;
         }
 
         /*** Complete this function ***/
+        int totalSamplesToFade = int(fadeValue * samplingRate);
+
+        // Ensure totalSamplesToFade does not exceed total samples
+        if (totalSamplesToFade > input.length) {
+            totalSamplesToFade = input.length;
+        }
+
+        for (int i = 0; i < totalSamplesToFade; i++) {
+            float fadeMultiplier = i / totalSamplesToFade;
+            input[i] *= fadeMultiplier;
+
+            if (input2.length > 0) {
+                input2[i] *= fadeMultiplier;
+            }
+        }
     }
 
     // Apply reverse
@@ -197,7 +213,19 @@ class AudioSamples {
             case(2): input = leftChannelSamples; input2 = rightChannelSamples; break;
         }
 
-        /*** Complete this function ***/
+        float temp;
+
+        for (int i = 0; i < (input.length - 1) / 2; i++) {
+            temp = input[i];
+            input[i] = input[input.length - 1 - i];
+            input[input.length - 1 - i] = temp;
+            
+            if (input2.length > 0) {
+                temp = input2[i];
+                input2[i] = input2[input2.length - 1 - i];
+                input2[input2.length - 1 - i] = temp;
+            }
+        } 
     }
 
     // Apply boost
@@ -215,7 +243,28 @@ class AudioSamples {
         float boostMax = -1.0; // set a low starting value for the max
         float boostMin = 1.0;  // set a high starting value for the min
 
-        /*** Complete this function ***/
+        // Find the max and min boost value in the input array
+        for (int i = 0; i < input.length; i++) {
+            if (boostMax < input[i]) {
+                boostMax = input[i];
+            }
+            
+            if (boostMin > input[i]) {
+                boostMin = input[i];
+            }
+        }
+
+        boostMin = -1 * boostMin;
+        float biggest = max(boostMax, boostMin);
+        float boostMultiplier = 1 / biggest; // maximum value = 1
+
+        for (int i = 0; i < input.length; i++) {
+            input[i] *= boostMultiplier;
+            
+            if (input2.length > 0) {
+                input2[i] *= boostMultiplier;
+            }
+        }
     }
 
     // Apply tremolo
