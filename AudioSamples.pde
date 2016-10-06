@@ -148,6 +148,17 @@ class AudioSamples {
         }
 
         /*** Complete this function if your student id ends in an odd number ***/
+        float[] output = new float[totalSamples];
+        float[] output2 = new float[totalSamples];
+
+
+        for (int i = 1; i < input.length; i++) {
+            output[i] = 0.5 * (input[i - 1] + input[i]);
+            output2[i] = 0.5 * (input2[i - 1] + input2[i]);
+        }
+
+        input = output;
+        input2 = output2;
     }
 
     // Apply band reject filter
@@ -318,6 +329,42 @@ class AudioSamples {
             delayLineMultiplier = param2;
         }
 
-        /*** complete this function ***/
+        // TODO: Finish this function correctly
+        int delayLineLength = (int) Math.floor(delayLineDuration * samplingRate);
+
+        float[] delayLineSample = new float[delayLineLength];
+
+        // Initialise the float array delayLineSample with the value 0
+        for (int i = 0; i < delayLineLength; i++) {
+            delayLineSample[i] = 0.0f;
+        }
+
+        // A temporary output to store the value of delay line
+        float delayLineOutput;
+
+        int clippingCount = 0;
+
+        for (int i = 0; i < input.length - 1; i++) {
+            // Extract the appropriate value from each of the delay lines,
+            // and add it to the original input sound later
+            if (i >= delayLineLength) {
+                delayLineOutput = delayLineSample[i % delayLineLength];
+            } else {
+                delayLineOutput = 0;
+            }
+
+            input[i] += (float) (delayLineOutput * delayLineMultiplier);
+
+            // Count the number of clippings 
+            if ((input[i] > 1.0) || (input[i] < -1.0)) {
+                clippingCount++;
+            }
+
+            delayLineSample[i % delayLineLength] = input[i];
+
+            if (clippingCount > 0) {
+                println(clippingCount + " samples have been clipped... result is invalid");
+            }
+        }
     }
 }
