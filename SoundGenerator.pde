@@ -290,12 +290,36 @@ class SoundGenerator implements Runnable {
 
     // This function generates a science fiction movie sound using FM synthesis
     private void generateSciFiSound(float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        // Use a relatively low modulator frequency (< 20 Hz)
+        generateBellFMSynthesis(amplitude, 15, duration);
     }
 
     // This function generate a sound using Karplus-Strong algorithm
     private void generateKarplusStrongSound2(float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        // TODO: complete this function (blend factor added)
+        // Fill the first 5 seoncds with a sine wave signal
+        generateSineInTimeDomain(amplitude, frequency, duration);
+        
+        int samplesToGenerate = int(duration * samplingRate);
+        int delay = 800;
+
+        Random random = new Random();
+        float blandFactor = random.nextFloat();
+
+        for (int i = delay + 1; i < samplesToGenerate; i++) {
+            if (random.nextFloat() <= blandFactor) {
+                soundSamples.leftChannelSamples[i] = 0.5 *
+                    (soundSamples.leftChannelSamples[i - delay] +
+                        soundSamples.leftChannelSamples[i - delay -1]);
+            } else {
+                soundSamples.leftChannelSamples[i] = -0.5 *
+                    (soundSamples.leftChannelSamples[i - delay] +
+                        soundSamples.leftChannelSamples[i - delay -1]);
+            }
+            
+            soundSamples.leftChannelSamples[i] *= amplitude;
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
+        }
     }
 
     // This function generates a waveform that is the multiplication of another 2 waveforms
