@@ -299,7 +299,12 @@ class AudioSamples {
             wetness = param2;
         }
 
-        /*** Complete this function ***/
+        // Multiply by a sine wave in range between 0 and 1
+        for (int i = 0; i < input.length - 1; i++) {
+            float currentTime = float(i) / samplingRate;
+            input[i] *= (sin(TWO_PI * tremoloFrequency * currentTime) + 1) / 2;
+            input2[i] *= (sin(TWO_PI * tremoloFrequency * currentTime) + 1) / 2;
+        }
     }
 
     // Apply echo
