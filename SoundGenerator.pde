@@ -254,14 +254,12 @@ class SoundGenerator implements Runnable {
     private void generateFourSineWave(float amplitude, float frequency, float duration) {
         // Generate the 3 sine waves by adding the sine waves at the correct frequency and
         // correct amplitude. The fundamental frequency comes from the variable 'frequency'.
-
-        // TODO: Ensure this method this correctly written
         int samplesToGenerate = int(duration * samplingRate);
         for (int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; i++) {
             float currentTime = float(i) / samplingRate;
             soundSamples.leftChannelSamples[i] = amplitude * (sin(TWO_PI * frequency * currentTime) +
-                0.8*sin(TWO_PI * 3*frequency * currentTime) + 0.8*sin(TWO_PI * 4*frequency * currentTime));
-            soundSamples.rightChannelSamples[i] = amplitude * soundSamples.leftChannelSamples[i];
+                0.8 * sin(TWO_PI * (3 * frequency) * currentTime) + 0.8 * sin(TWO_PI * (4 * frequency) * currentTime));
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
         }
     }
 
@@ -298,7 +296,7 @@ class SoundGenerator implements Runnable {
     // This function generates a science fiction movie sound using FM synthesis
     private void generateSciFiSound(float amplitude, float frequency, float duration) {
         // Use a relatively low modulator frequency (< 20 Hz)
-        generateBellFMSynthesis(amplitude, 50, duration);
+        generateBellFMSynthesis(amplitude, 35, duration);
     }
 
     // This function generate a sound using Karplus-Strong algorithm
@@ -333,25 +331,27 @@ class SoundGenerator implements Runnable {
     // This function generates a waveform that is the multiplication of another 2 waveforms
     // Use AudioSamples::reMap if needed
     private void generateAxB(int soundA, int soundB, float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        // Generate sound A in which the amplitude is between 0 and 1
         generateSound(soundA, amplitude, frequency, duration);
-
         soundSamples.reMap(-1, 1, 0, 1);
 
+        // Copy sound A to a float array temp 
         float[] temp = new float[soundSamples.leftChannelSamples.length];
         for (int i = 0; i < soundSamples.leftChannelSamples.length; i++) {
             temp[i] = soundSamples.leftChannelSamples[i];
         }
 
+        // Generate sound B in which the amplitude is between 0 and 1
         generateSound(soundB, amplitude, frequency, duration);
-
         soundSamples.reMap(-1, 1, 0, 1);
 
+        // Multiply sound A by sound B
         for (int i = 0; i < soundSamples.leftChannelSamples.length; i++) {
             soundSamples.leftChannelSamples[i] *= temp[i];
             soundSamples.rightChannelSamples[i] *= temp[i];
         }
 
+        // Scale the result sound to between -1 and 1
         soundSamples.reMap(0, 1, -1, 1);
     }
 
