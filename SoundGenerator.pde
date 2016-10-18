@@ -232,7 +232,7 @@ class SoundGenerator implements Runnable {
         for (int i = delay + 1; i < samplesToGenerate; i++) {
             soundSamples.leftChannelSamples[i] = 0.5 *
                 (soundSamples.leftChannelSamples[i - delay] +
-                    soundSamples.leftChannelSamples[i - delay -1]);
+                    soundSamples.leftChannelSamples[i - delay - 1]);
             soundSamples.leftChannelSamples[i] *= amplitude;
             soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
         }
@@ -255,7 +255,14 @@ class SoundGenerator implements Runnable {
         // Generate the 3 sine waves by adding the sine waves at the correct frequency and
         // correct amplitude. The fundamental frequency comes from the variable 'frequency'.
 
-        /*** complete this function ***/
+        // TODO: Ensure this method this correctly written
+        int samplesToGenerate = int(duration * samplingRate);
+        for (int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; i++) {
+            float currentTime = float(i) / samplingRate;
+            soundSamples.leftChannelSamples[i] = amplitude * (sin(TWO_PI * frequency * currentTime) +
+                0.8*sin(TWO_PI * 3*frequency * currentTime) + 0.8*sin(TWO_PI * 4*frequency * currentTime));
+            soundSamples.rightChannelSamples[i] = amplitude * soundSamples.leftChannelSamples[i];
+        }
     }
 
     // This function generates a repeating narrow pulse
@@ -291,17 +298,55 @@ class SoundGenerator implements Runnable {
     // This function generates a science fiction movie sound using FM synthesis
     private void generateSciFiSound(float amplitude, float frequency, float duration) {
         /*** complete this function ***/
+
+        // Change paramters
     }
 
     // This function generate a sound using Karplus-Strong algorithm
     private void generateKarplusStrongSound2(float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        // Fill the first 5 seoncds with a sine wave signal
+        // generateSineInTimeDomain(amplitude, frequency, duration);
+        // TODO: Use white noise
+        
+        // random blend b
+        //TODO: complete this function
+
+
+        int samplesToGenerate = int(duration * samplingRate);
+        int delay = 800;
+
+        for (int i = delay + 1; i < samplesToGenerate; i++) {
+            soundSamples.leftChannelSamples[i] = 0.5 *
+                (soundSamples.leftChannelSamples[i - delay] +
+                    soundSamples.leftChannelSamples[i - delay - 1]);
+            soundSamples.leftChannelSamples[i] *= amplitude;
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
+        }
     }
 
     // This function generates a waveform that is the multiplication of another 2 waveforms
     // Use AudioSamples::reMap if needed
     private void generateAxB(int soundA, int soundB, float amplitude, float frequency, float duration) {
         /*** complete this function ***/
+        generateSound(soundA, amplitude, frequency, duration);
+
+        soundSamples.reMap(-1, 1, 0, 1);
+
+        float[] temp = new float[soundSamples.leftChannelSamples.length];
+        for (int i = 0; i < soundSamples.leftChannelSamples.length; i++) {
+            temp[i] = soundSamples.leftChannelSamples[i];
+        }
+
+        generateSound(soundB, amplitude, frequency, duration);
+
+        soundSamples.reMap(-1, 1, 0, 1);
+
+        for (int i = 0; i < soundSamples.leftChannelSamples.length; i++) {
+            soundSamples.leftChannelSamples[i] *= temp[i];
+            soundSamples.rightChannelSamples[i] *= temp[i];
+        }
+
+        soundSamples.reMap(0, 1, -1, 1);
     }
 
     // You can add your own sound if you want to
