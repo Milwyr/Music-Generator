@@ -89,10 +89,8 @@ class TrackGenerator implements Runnable {
 
     // This function convert MIDI pitch to frequency
     private float MIDIPitchToFreq(int MIDIPitch) {
-        float temp = 256.0;
-
-        /*** complete this function ***/
-
-        return temp;
+        // float temp = 256.0;
+        // return temp;
+        return 27.5 * (2 ^ (MIDIPitch / 12));
     }
 }

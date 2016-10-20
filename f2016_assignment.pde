@@ -823,12 +823,17 @@ void generateSoundSequence() {
         println(">>>  Please wait, creating best examples of all sounds and saving to WAV file 'allsounds.wav'...");
     }
 
-    /*** complete this function ***/
-    soundGenerator.generateSound(1, 1.0, 260, 5.0);
-    AudioSamples samples = soundGenerator.getGeneratedSound();
-    samples.applyPostProcessing(2); // Post-Process the sound (2 = exponential decay)
-    samples.applyPostProcessing(7); // Post-Process the sound (7 = boost)
-    soundSequenceSamples.add(samples, 0.0, 0.0);
+    // Generate 19 different sounds (first sound is index 1)
+    final int DURATION = 3;
+    for (int i = 1; i <= 19; i++) {
+        soundGenerator.generateSound(i, 1.0, 260, DURATION);
+        AudioSamples samples = soundGenerator.getGeneratedSound();
+        samples.applyPostProcessing(2); // Post-Process the sound (2 = exponential decay)
+        samples.applyPostProcessing(7); // Post-Process the sound (7 = boost)
+
+        Random random = new Random();
+        soundSequenceSamples.add(samples, random.nextFloat(), (i-1) * DURATION);
+    }
 
     // Save the sound samples to a WAV file
     WAVFileWriter fw = new WAVFileWriter("allsounds.wav");
