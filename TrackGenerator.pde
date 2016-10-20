@@ -90,7 +90,10 @@ class TrackGenerator implements Runnable {
     // This function convert MIDI pitch to frequency
     private float MIDIPitchToFreq(int MIDIPitch) {
         // float temp = 256.0;
-        // return temp;
-        return 27.5 * (2 ^ (MIDIPitch / 12));
+        double exponent = (MIDIPitch - 49d) / 12d;
+        double frequency = 440 * (Math.pow(2d, exponent));
+        
+        System.out.println("Note: " + MIDIPitch + "; Frequency: " + String.format("%.2f", frequency));
+        return (float) frequency;
     }
 }

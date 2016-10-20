@@ -865,12 +865,12 @@ public void generateMusic(File selection) {
 
         String filePath = selection.getAbsolutePath();
 
-        int[] sounds = {0, 1, 2};
-        float[] vols = {0, 1, 1};
+        int[] sounds = {0, 1, 2, 0, 0, 0, 5, 4};
+        float[] vols = {0, 0, 0, 0, 0, 0, 0, 1};
         int[][] pps = {
-            {0, 0, 0}, {2, 0, 7}, {2, 9, 7}
+            {0, 0, 0}, {2, 0, 7}, {2, 9, 7}, {2, 7}, {2, 7}, {2, 7}, {2, 7}, {2, 7}
         };
-        float[] stereoPositions = {0, 0.7, 0.3};
+        float[] stereoPositions = {0, 0.7, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5};
 
         int startTime = 0; // Where to begin (in seconds)
         int endTime = 30; // Where to end (in seconds)
