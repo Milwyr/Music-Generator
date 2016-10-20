@@ -265,7 +265,22 @@ class SoundGenerator implements Runnable {
 
     // This function generates a repeating narrow pulse
     private void generateRepeatingNarrowPulse(float amplitude, float frequency, float duration) {
-        /*** complete this function ***/
+        int samplesToGenerate = int(duration * samplingRate);
+        
+        for (int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; i++) {
+            float sampleValue = 0;
+            float currentTime = float(i) / samplingRate;
+            int wave = 1;
+            
+            while(wave * frequency < nyquistFrequency) {
+              sampleValue += (1 * sin(PI * frequency * currentTime) *
+                  sin(PI * frequency * currentTime)) * sin(wave * PI * frequency * currentTime);
+              wave++;
+            }
+            
+            soundSamples.leftChannelSamples[i] = amplitude * sampleValue;
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
+        }
     }
 
     // This function generates a triangle wave using the time domain method
@@ -296,7 +311,19 @@ class SoundGenerator implements Runnable {
     // This function generates a science fiction movie sound using FM synthesis
     private void generateSciFiSound(float amplitude, float frequency, float duration) {
         // Use a relatively low modulator frequency (< 20 Hz)
-        generateBellFMSynthesis(amplitude, 35, duration);
+        int samplesToGenerate = int(duration * samplingRate);
+        
+        for (int i = 0; i < samplesToGenerate && i < soundSamples.totalSamples; i++) {
+            float carrierFrequency = 500;
+            float modularFrequency = 10;
+            float modularAmplitude = 10;
+            float sampleValue = 0;
+            float currentTime = float(i) / samplingRate;
+            sampleValue = amplitude *  sin(TWO_PI * carrierFrequency * currentTime +
+              (modularAmplitude *  sin(TWO_PI * modularFrequency * currentTime)));
+            soundSamples.leftChannelSamples[i] = amplitude * sampleValue;
+            soundSamples.rightChannelSamples[i] = soundSamples.leftChannelSamples[i];
+         }
     }
 
     // This function generate a sound using Karplus-Strong algorithm
