@@ -865,7 +865,7 @@ public void generateMusic(File selection) {
 
         String filePath = selection.getAbsolutePath();
 
-        int[] sounds = {0, 1, 2, 0, 0, 0, 5, 4};
+        int[] sounds = {0, 1, 2, 0, 0, 0, 5, 2};
         float[] vols = {0, 0, 0, 0, 0, 0, 0, 1};
         int[][] pps = {
             {0, 0, 0}, {2, 0, 7}, {2, 9, 7}, {2, 7}, {2, 7}, {2, 7}, {2, 7}, {2, 7}
@@ -873,11 +873,11 @@ public void generateMusic(File selection) {
         float[] stereoPositions = {0, 0.7, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5};
 
         int startTime = 0; // Where to begin (in seconds)
-        int endTime = 30; // Where to end (in seconds)
+        int endTime = 60; // Where to end (in seconds)
 
         // By default, the micro tempo is 50000 and hence the tempo is 120 (120 quarter note per minute).
         // The song "Let it go" has a tempo of 64.
-        int microTempo = 93750; // Default: 50000 for tempo 120;
+        int microTempo = 9000; // Default: 50000 for tempo 120;
         int beatPerMinute = 6000000 / microTempo;
         float beatDuration = 60.0 / beatPerMinute;
 
